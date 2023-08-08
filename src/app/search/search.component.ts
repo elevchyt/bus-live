@@ -8,8 +8,7 @@ import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 
 export class SearchComponent implements OnInit {
   @ViewChild('busStopSearchField') busStopSearchField: ElementRef<HTMLInputElement>;
-  
-  searchBusText: string;
+
   searchTimeout: ReturnType<typeof setTimeout>;
 
   onBusNameType(event: Event) {
@@ -20,7 +19,7 @@ export class SearchComponent implements OnInit {
     clearTimeout(this.searchTimeout);
     if (this.busStopSearchField.nativeElement.value) {
       this.searchTimeout = setTimeout(() => {
-        console.log(this.busStopSearchField.nativeElement.value);
+        this.performSearch(false);
       }, 3000);
     }
   }
@@ -28,6 +27,19 @@ export class SearchComponent implements OnInit {
   onBusNameFocus() {
     // Clear on focus
     this.busStopSearchField.nativeElement.value = "";
+  }
+
+  performSearch(unfocus: boolean) {
+    const searchText = this.busStopSearchField.nativeElement.value;
+    
+    if (unfocus) {
+      this.busStopSearchField.nativeElement.blur();
+    }
+
+    if (searchText) {
+      clearTimeout(this.searchTimeout);
+      console.log('searching...');
+    }
   }
 
   ngOnInit() {
