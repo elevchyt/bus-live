@@ -72,5 +72,6 @@ export class MapComponent implements AfterViewInit {
     this.getUserLocation().then(position => {
       this.setCenterToLocation(position.coords.latitude, position.coords.longitude, 16);
     });
+    
   }
 }
