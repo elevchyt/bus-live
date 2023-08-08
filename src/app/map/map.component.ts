@@ -11,6 +11,7 @@ declare var H: any;
 export class MapComponent implements AfterViewInit {
   platform: any;
   map: any;
+  ui: any;
 
   constructor() {
     this.platform = new H.service.Platform({
@@ -20,7 +21,7 @@ export class MapComponent implements AfterViewInit {
   }
 
   initMap(): void {
-    var defaultLayers = this.platform.createDefaultLayers();
+    let defaultLayers = this.platform.createDefaultLayers();
 
     this.map = new H.Map(
       document.getElementById('map-container'),
@@ -31,14 +32,14 @@ export class MapComponent implements AfterViewInit {
     );
     window.addEventListener('resize', () => this.map.getViewPort().resize());
 
-    var behavior = new H.mapevents.Behavior(
+    let behavior = new H.mapevents.Behavior(
       new H.mapevents.MapEvents(this.map)
     );
-    var ui = H.ui.UI.createDefault(this.map, defaultLayers);
+    this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
 
     // Set custom map style
-    var provider = this.map.getBaseLayer().getProvider();
-    var style = new H.map.Style('/assets/map-theme-day.yaml');
+    let provider = this.map.getBaseLayer().getProvider();
+    let style = new H.map.Style('/assets/map-theme-day.yaml');
     provider.setStyle(style);
   }
 
