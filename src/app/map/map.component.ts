@@ -29,8 +29,6 @@ export class MapComponent implements AfterViewInit {
       document.getElementById('map-container'),
       defaultLayers.vector.normal.map,
       {
-        center: { lat: 50, lng: 5 },
-        zoom: 4,
         pixelRatio: window.devicePixelRatio || 1,
       }
     );
@@ -38,11 +36,16 @@ export class MapComponent implements AfterViewInit {
 
     var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(this.map));
     var ui = H.ui.UI.createDefault(this.map, defaultLayers);
+
+    // Set custom map style
+    var provider = this.map.getBaseLayer().getProvider();
+    var style = new H.map.Style('/assets/map-theme-day.yaml');
+    provider.setStyle(style);
   }
 
   setCenterToLocation(lat: number, lng: number, zoomLevel: number) {
     this.map.setCenter({lat, lng});
-    this.map.setZoom(zoomLevel, true)
+    this.map.setZoom(zoomLevel, false)
   }
 
   getUserLocation(): Promise<GeolocationPosition> {
@@ -59,7 +62,7 @@ export class MapComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.initMap();
     this.getUserLocation().then(position => {
-      this.setCenterToLocation(position.coords.latitude, position.coords.longitude, 15);
+      this.setCenterToLocation(position.coords.latitude, position.coords.longitude, 16);
     });
   }
 }
