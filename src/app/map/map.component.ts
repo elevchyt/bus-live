@@ -1,5 +1,5 @@
 import { Component, AfterViewInit } from '@angular/core';
-import * as busStops from '../../assets/bus-stops.json';
+import busStopsData from '../../assets/bus-stops.json';
 
 declare var H: any;
 
@@ -57,8 +57,13 @@ export class MapComponent implements AfterViewInit {
   }
 
   addBusStopsMarkers() {
-    // console.log(busStops);
-    
+    const busStopSvg = '<svg width="8" height="8" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#A0A0A04D" stroke="#6464644D" stroke-width="2" /></svg>';
+    const busStopIcon = new H.map.Icon(busStopSvg);
+    const busStops = busStopsData.busStops;
+    busStops.forEach(busStop => {
+      const busStopMarker = new H.map.Marker({lat: busStop['latitude'], lng: busStop['longitude']}, {icon: busStopIcon});
+      this.map.addObject(busStopMarker);
+    });
   }
 
   ngAfterViewInit(): void {
