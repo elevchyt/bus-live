@@ -1,10 +1,7 @@
 import { Component, AfterViewInit } from '@angular/core';
+import * as busStops from '../../assets/bus-stops.json';
 
 declare var H: any;
-type GeolocationType = {
-  lat: number;
-  lng: number;
-};
 
 @Component({
   selector: 'app-map',
@@ -59,8 +56,14 @@ export class MapComponent implements AfterViewInit {
     });
   }
 
+  addBusStopsMarkers() {
+    // console.log(busStops);
+    
+  }
+
   ngAfterViewInit(): void {
     this.initMap();
+    this.addBusStopsMarkers();
     this.getUserLocation().then(position => {
       this.setCenterToLocation(position.coords.latitude, position.coords.longitude, 16);
     });
