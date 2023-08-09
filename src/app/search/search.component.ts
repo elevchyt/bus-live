@@ -45,7 +45,7 @@ export class SearchComponent implements OnInit {
     if (searchText) {
       clearTimeout(this.searchTimeout);
       console.log('searching...');
-      this.http.post('http://telematics.oasa.gr/api/?act=getLinesAndRoutesForMl&p1=9', {}).subscribe(res => {
+      this.http.get('https://l0ouw2xcya.execute-api.eu-north-1.amazonaws.com/live/buses', {}).subscribe(res => {
         console.log(res);
       });
     }
