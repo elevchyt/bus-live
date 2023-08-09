@@ -13,6 +13,10 @@ export class MapComponent implements AfterViewInit {
   map: any;
   ui: any;
 
+  busStopsGroup = new H.map.Group();
+  busesGroup = new H.map.Group();
+  personMarker: any;
+
   constructor() {
     this.platform = new H.service.Platform({
       apikey: 'LdxjfnzINnwrxVB-SH965nqjxy-SyJYbUyT8B_fwN8s',
@@ -50,13 +54,14 @@ export class MapComponent implements AfterViewInit {
 
   addUserLocationMarker(lat: number, lng: number) {
     const personSvg =
-      '<svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#f68221" stroke="#ffffff" stroke-width="2" /></svg>';
+      '<svg width="16" height="16" fill="none" style="overflow: visible;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#f68221" stroke="#ffffff" stroke-width="2" /></svg>';
+      // '<svg width="16" height="16" fill="none" style="overflow: visible;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#f68221" stroke="#ffffff" stroke-width="2" /><text x="-4" y="48" fill="white" stroke="black" class="font-sans" style="font-size: 2rem; font-weight: 800;">BUS_NAME</text></svg>';
     const personIcon = new H.map.Icon(personSvg);
-    const personMarker = new H.map.Marker(
+    this.personMarker = new H.map.Marker(
       { lat: lat, lng: lng },
       { icon: personIcon }
     );
-    this.map.addObject(personMarker);
+    this.map.addObject(this.personMarker);
   }
 
   getUserLocation(): Promise<GeolocationPosition> {
@@ -80,8 +85,9 @@ export class MapComponent implements AfterViewInit {
         { lat: busStop['latitude'], lng: busStop['longitude'] },
         { icon: busStopIcon }
       );
-      this.map.addObject(busStopMarker);
+      this.busStopsGroup.addObject(busStopMarker);
     });
+    this.map.addObject(this.busStopsGroup);
   }
 
   ngAfterViewInit(): void {
