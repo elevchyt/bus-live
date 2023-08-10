@@ -1,5 +1,7 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { BusService } from './../../services/bus.service';
+import { Component, AfterViewInit, OnDestroy } from '@angular/core';
 import busStopsData from '../../../assets/bus-stops.json';
+import { Subscription } from 'rxjs';
 
 declare var H: any;
 
@@ -8,7 +10,8 @@ declare var H: any;
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
 })
-export class MapComponent implements AfterViewInit {
+export class MapComponent implements AfterViewInit, OnDestroy {
+  subscriptions: Array<Subscription> = [];
   platform: any;
   map: any;
   ui: any;
@@ -19,11 +22,20 @@ export class MapComponent implements AfterViewInit {
 
   currentActiveRouteCode: string; // the route code of the currently selected bus that is being watched live by the user
 
-  constructor() {
+  constructor(private busService: BusService) {
+    // Map API Auth
     this.platform = new H.service.Platform({
       apikey: 'LdxjfnzINnwrxVB-SH965nqjxy-SyJYbUyT8B_fwN8s',
       useHTTPS: true,
     });
+
+    // Update selected bus location
+    const subscription: Subscription = this.busService
+      .updateSelectedBusLocationListen()
+      .subscribe((routeCode: string) => {
+        console.log(routeCode);
+      });
+    this.subscriptions.push(subscription);
   }
 
   initMap(): void {
@@ -57,7 +69,7 @@ export class MapComponent implements AfterViewInit {
   addUserLocationMarker(lat: number, lng: number) {
     const personSvg =
       '<svg width="16" height="16" fill="none" style="overflow: visible;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#f68221" stroke="#ffffff" stroke-width="2" /></svg>';
-      // '<svg width="16" height="16" fill="none" style="overflow: visible;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#f68221" stroke="#ffffff" stroke-width="2" /><text x="-4" y="48" fill="white" stroke="black" class="font-sans" style="font-size: 2rem; font-weight: 800;">BUS_NAME</text></svg>';
+    // '<svg width="16" height="16" fill="none" style="overflow: visible;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#f68221" stroke="#ffffff" stroke-width="2" /><text x="-4" y="48" fill="white" stroke="black" class="font-sans" style="font-size: 2rem; font-weight: 800;">BUS_NAME</text></svg>';
     const personIcon = new H.map.Icon(personSvg);
     this.personMarker = new H.map.Marker(
       { lat: lat, lng: lng },
@@ -106,5 +118,9 @@ export class MapComponent implements AfterViewInit {
         position.coords.longitude
       );
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 }
