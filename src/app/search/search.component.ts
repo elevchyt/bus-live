@@ -22,12 +22,12 @@ export class SearchComponent implements OnInit {
     this.busStopSearchField.nativeElement.value = this.busStopSearchField.nativeElement.value.toUpperCase();
 
     // Perform search 3s after typing
-    clearTimeout(this.searchTimeout);
-    if (this.busStopSearchField.nativeElement.value) {
-      this.searchTimeout = setTimeout(() => {
-        this.performSearch(false);
-      }, 3000);
-    }
+    // clearTimeout(this.searchTimeout);
+    // if (this.busStopSearchField.nativeElement.value) {
+    //   this.searchTimeout = setTimeout(() => {
+    //     this.performSearch(false);
+    //   }, 3000);
+    // }
   }
 
   onBusNameFocus() {
@@ -44,8 +44,7 @@ export class SearchComponent implements OnInit {
 
     if (searchText) {
       clearTimeout(this.searchTimeout);
-      console.log('searching...');
-      this.http.get('https://l0ouw2xcya.execute-api.eu-north-1.amazonaws.com/live/buses', {}).subscribe(res => {
+      this.http.get(`http://localhost:4300/bus-routes/${searchText}`).subscribe(res => {
         console.log(res);
       });
     }
