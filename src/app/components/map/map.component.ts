@@ -1,5 +1,5 @@
 import { Component, AfterViewInit } from '@angular/core';
-import busStopsData from '../../assets/bus-stops.json';
+import busStopsData from '../../../assets/bus-stops.json';
 
 declare var H: any;
 
@@ -16,6 +16,8 @@ export class MapComponent implements AfterViewInit {
   busStopsGroup = new H.map.Group();
   busesGroup = new H.map.Group();
   personMarker: any;
+
+  currentActiveRouteCode: string; // the route code of the currently selected bus that is being watched live by the user
 
   constructor() {
     this.platform = new H.service.Platform({
