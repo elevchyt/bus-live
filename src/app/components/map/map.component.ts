@@ -129,6 +129,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.map.removeObject(this.busesGroup);
     }
   }
+
   addBusMarkers(busLocations: any[]) {
     // Clear previous markers first (if there are any...)
     this.clearBusMarkers();
@@ -148,13 +149,78 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         { lat: Number(bus['CS_LAT']), lng: Number(bus['CS_LNG']) },
         { icon: busIcon }
       );
+      // Set an ID for this marker. We later use it to update the vehicle's position.
+      busMarker.setData({
+        id: bus['VEH_NO'],
+      });
       this.busesGroup.addObject(busMarker);
     });
     this.map.addObject(this.busesGroup);
   }
 
+  addSingleBusMarker(bus: any) {
+    const busSvg =
+      '<svg width="16" height="16" fill="none" style="overflow: visible;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
+      '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#6da0fd" stroke="#000000" style="opacity: 0.15;" stroke-width="24" />' +
+      '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#6da0fd" stroke="#ffffff" stroke-width="2" />' +
+      '<text x="-4" y="48" fill="#fae50f" stroke="black" class="font-sans" style="font-size: 2rem; font-weight: 800;text-shadow: 0 0px 18px rgba(0, 0, 0, 0.4);user-select: none;">' +
+      'BUS_NAME</text></svg>'.replace(
+        'BUS_NAME',
+        this.busService.selectedBusName
+      );
+    const busIcon = new H.map.DomIcon(busSvg);
+    const busMarker = new H.map.DomMarker(
+      { lat: Number(bus['CS_LAT']), lng: Number(bus['CS_LNG']) },
+      { icon: busIcon }
+    );
+    // Set an ID for this marker. We later use it to update the vehicle's position.
+    busMarker.setData({
+      id: bus['VEH_NO'],
+    });
+    this.busesGroup.addObject(busMarker);
+    this.map.addObject(this.busesGroup);
+  }
+
+  // Responsible for smoothly moving bus markers to their updated locations, removing junk markers and adding newly fetched ones
+  updateBusMarkers(newLocations: any) {
+    console.log(newLocations);
+
+    let validBusesIds: any[] = [];
+    newLocations.forEach((fetchedBus: any) => {
+      // Match the fetched buses to the existing buses, if one is not found that means that this fetched bus is NEW, so we need to add it
+      let currBusMarker; // validBusesIds are buses that exist, we later compare them to the existing array of buses to remove unused/finished buses
+      for (let busMarker of this.busesGroup.getObjects()) {
+        if (busMarker.getData().id == fetchedBus['VEH_NO']) {
+          currBusMarker = busMarker;
+          validBusesIds.push(busMarker.getData().id);
+          break;
+        }
+      }
+
+      // If fetched bus doesn't match a bus on the map, we create that bus
+      if (!currBusMarker) {
+        this.addSingleBusMarker(fetchedBus);
+      }
+      // If fetched bus matches a bus on the map, we updated that marker's position to the fetched bus's position
+      else {
+        console.log('Placeholder for bus location animation...');
+      }
+    });
+
+    // Finally, remove buses that are not inside validBuses
+    console.log(validBusesIds);
+    this.busesGroup.getObjects().forEach((currBusMarker: any) => {
+      if (!validBusesIds.includes(currBusMarker.getData().id)) {
+        console.log(`Vehicle with ID ${currBusMarker.getData().id} has been removed as it wasn't returned from OASA in the latest bus locations update!`);
+        this.busesGroup.removeObject(currBusMarker);
+      }
+    });
+  }
+
   checkForNewBusLocation() {
     if (this.busService.currentActiveRouteCode) {
+      console.warn('Updating bus markers...');
+
       this.http
         .get(
           `http://localhost:4300/bus-location/${this.busService.currentActiveRouteCode}`
@@ -166,9 +232,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
             this.busService.currentActiveRouteCode = '';
             this.busService.selectedBusName = '';
           }
-          // If bus location is found, add the new buses markers
+          // If bus location is found, update the bus markers
           else {
-            this.addBusMarkers(res);
+            // this.addBusMarkers(res);
+            this.updateBusMarkers(res);
           }
         });
     }
@@ -191,7 +258,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     // Update the buses' location if there is a bus that the user is currently watching
     this.checkForBusLocationsInterval = setInterval(() => {
-      console.warn('Updating bus locations...');
       this.checkForNewBusLocation();
     }, 6000);
   }
