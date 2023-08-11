@@ -39,7 +39,7 @@
     <div class="h-3/4 flex justify-center flex-col overflow-y-auto">
       <button
         *ngFor="let route of routes"
-        class="h-20 my-2 rounded-lg bg-blue-400 overflow-hidden text-white shadow-lg active:bg-blue-500 transition-all uppercase"
+        class="h-20 my-2 px-2 rounded-lg bg-blue-400 overflow-hidden text-white shadow-xl active:bg-blue-500 hover:-translate-y-1 transition-all uppercase"
         (click)="onRouteSelect(route.RouteCode)"
       >
         {{ route.RouteDescr }}

@@ -68,7 +68,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     let behavior = new H.mapevents.Behavior(
       new H.mapevents.MapEvents(this.map)
     );
-    this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
+    // this.ui = H.ui.UI.createDefault(this.map, defaultLayers);
 
     // Set custom map style
     let provider = this.map.getBaseLayer().getProvider();
@@ -83,10 +83,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   addUserLocationMarker(lat: number, lng: number) {
     const personSvg =
-      '<svg width="16" height="16" fill="none" style="overflow: visible;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#f68221" stroke="#ffffff" stroke-width="2" /></svg>';
-    // '<svg width="16" height="16" fill="none" style="overflow: visible;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#f68221" stroke="#ffffff" stroke-width="2" /><text x="-4" y="48" fill="white" stroke="black" class="font-sans" style="font-size: 2rem; font-weight: 800;">BUS_NAME</text></svg>';
-    const personIcon = new H.map.Icon(personSvg);
-    this.personMarker = new H.map.Marker(
+      '<svg width="16" height="16" fill="none" style="overflow: visible;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
+      '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#6da0fd" stroke="#000000" style="opacity: 0.15;" stroke-width="24" />' +
+      '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#f68221" stroke="#ffffff" stroke-width="2" /></svg>';
+
+    const personIcon = new H.map.DomIcon(personSvg);
+    this.personMarker = new H.map.DomMarker(
       { lat: lat, lng: lng },
       { icon: personIcon }
     );
@@ -128,9 +130,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     const busSvg =
       '<svg width="16" height="16" fill="none" style="overflow: visible;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
-      '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#6da0fd" stroke="#000000" style="opacity: 0.2;" stroke-width="24" />' +
+      '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#6da0fd" stroke="#000000" style="opacity: 0.15;" stroke-width="24" />' +
       '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#6da0fd" stroke="#ffffff" stroke-width="2" />' +
-      '<text x="-4" y="48" fill="white" stroke="black" class="font-sans" style="font-size: 2rem; font-weight: 800;text-shadow: 0 0px 18px rgba(0, 0, 0, 0.4);">' +
+      '<text x="-4" y="48" fill="#fae50f" stroke="black" class="font-sans" style="font-size: 2rem; font-weight: 800;text-shadow: 0 0px 18px rgba(0, 0, 0, 0.4);user-select: none;">' +
       'BUS_NAME</text></svg>'.replace(
         'BUS_NAME',
         this.busService.selectedBusName
