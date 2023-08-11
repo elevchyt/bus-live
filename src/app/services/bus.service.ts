@@ -1,11 +1,13 @@
-import { Injectable } from "@angular/core";
-import { Observable, Subject } from "rxjs";
+import { Injectable } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable()
 export class BusService {
+  selectedBusName: string = '-';
+
   private updateSelectedBusLocationListeners = new Subject<any>();
   private openBusRoutesModalListeners = new Subject<any>();
-  
+
   updateSelectedBusLocationListen(): Observable<any> {
     return this.updateSelectedBusLocationListeners.asObservable();
   }
@@ -19,6 +21,6 @@ export class BusService {
   }
 
   openBusRoutesModal(routes: object) {
-    this.updateSelectedBusLocationListeners.next(routes);
+    this.openBusRoutesModalListeners.next(routes);
   }
 }

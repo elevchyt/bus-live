@@ -11,22 +11,12 @@ export class SearchComponent implements OnInit {
   @ViewChild('busStopSearchField')
   busStopSearchField: ElementRef<HTMLInputElement>;
 
-  searchTimeout: ReturnType<typeof setTimeout>;
-
   constructor(private http: HttpClient, private busService: BusService) {}
 
   onBusNameType(event: Event) {
     // Force uppercase when user is typing
     this.busStopSearchField.nativeElement.value =
       this.busStopSearchField.nativeElement.value.toUpperCase();
-
-    // Perform search 3s after typing
-    // clearTimeout(this.searchTimeout);
-    // if (this.busStopSearchField.nativeElement.value) {
-    //   this.searchTimeout = setTimeout(() => {
-    //     this.performSearch(false);
-    //   }, 3000);
-    // }
   }
 
   onBusNameFocus() {
@@ -42,11 +32,11 @@ export class SearchComponent implements OnInit {
     }
 
     if (searchText) {
-      clearTimeout(this.searchTimeout);
       this.http
         .get(`http://localhost:4300/bus-routes/${searchText}`)
         .subscribe((res) => {
           this.busService.openBusRoutesModal(res);
+          this.busService.selectedBusName = searchText;
         });
     }
   }

@@ -6,13 +6,15 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MapComponent } from './components/map/map.component';
 import { SearchComponent } from './components/search/search.component';
+import { RouteModalComponent } from './components/route-modal/route-modal.component';
 import { BusService } from './services/bus.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     MapComponent,
-    SearchComponent
+    SearchComponent,
+    RouteModalComponent
   ],
   imports: [
     BrowserModule,
