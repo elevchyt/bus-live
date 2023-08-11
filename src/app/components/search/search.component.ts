@@ -43,7 +43,7 @@ export class SearchComponent implements OnInit {
     }
 
     if (searchText) {
-      this.apiService.get(`/bus-routes/${searchText}`).subscribe((res) => {
+      this.apiService.get(`bus-routes/${searchText}`).subscribe((res) => {
         this.busService.openBusRoutesModal(res);
         this.busService.selectedBusName = searchText;
       });

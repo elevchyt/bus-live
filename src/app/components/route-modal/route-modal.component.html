@@ -32,17 +32,38 @@
     </div>
 
     <!-- Modal Contents -->
-    <h2 class="text-2xl text-center mb-6 animate-bounce motion-safe">
+    <h1 class="text-2xl text-center mb-6 animate-bounce motion-safe">
       Routes for {{ busService.selectedBusName }}
-    </h2>
+    </h1>
 
-    <div class="h-3/4 flex justify-center flex-col overflow-y-auto">
+    <h3
+      [class.hidden]="currentMode == 'routeSelect'"
+      class="text-md text-center mb-6"
+    >
+      {{ selectedRoute?.RouteDescr }}
+    </h3>
+
+    <div
+      [class.hidden]="currentMode == 'routeInfo'"
+      class="h-3/4 flex justify-center flex-col overflow-y-auto"
+    >
       <button
         *ngFor="let route of routes"
         class="h-20 my-2 px-2 rounded-lg bg-blue-400 overflow-hidden text-white shadow-xl active:bg-blue-500 hover:-translate-y-1 transition-all uppercase"
-        (click)="onRouteSelect(route.RouteCode)"
+        (click)="onRouteSelect(route)"
       >
         {{ route.RouteDescr }}
+      </button>
+    </div>
+
+    <!-- OK BUTTON -->
+    <div class="w-full flex justify-center">
+      <button
+        [class.hidden]="currentMode == 'routeSelect'"
+        class="w-10/12 h-12 my-2 px-2 rounded-lg bg-blue-400 overflow-hidden text-white shadow-xl active:bg-blue-500 hover:-translate-y-1 transition-all uppercase"
+        (click)="setModalOpen(false)"
+      >
+        OK
       </button>
     </div>
   </div>
