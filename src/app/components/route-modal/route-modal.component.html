@@ -64,8 +64,14 @@
       <div *ngFor="let stop of stops" class="py-1">
         {{ stop.StopDescr }}
         <span class="text-sm font-bold"
-          >{{ stop.ArrivalTime }}<span [class.hidden]="stop.ArrivalTime == '-'">'</span></span
+          >{{ stop.ArrivalTime
+          }}<span [class.hidden]="stop.ArrivalTime == '-'">'</span></span
         >
+      </div>
+
+      <!-- Loading Spinner -->
+      <div [class.hidden]="!isStopsRequestPending">
+        <app-loading-spinner></app-loading-spinner>
       </div>
     </div>
 

@@ -48,7 +48,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         this.apiService.get(`bus-location/${routeCode}`).subscribe((res: any) => {
           // If no bus location is found, inform the user that there is no active bus for this route at the moment
           if (res.noActiveBusFound) {
-            alert('There are no active buses in this route!');
+            // alert('There are no active buses in this route!');
           }
           // If bus location is found, add buses markers & set view of map to the first bus found
           else {

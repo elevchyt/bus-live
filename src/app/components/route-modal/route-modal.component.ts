@@ -17,6 +17,7 @@ export class RouteModalComponent implements OnInit, OnDestroy {
   routes: any[] = [];
   selectedRoute: any;
   stops: any[] = [];
+  isStopsRequestPending: boolean = false;
 
   currentMode: ModesType = 'routeSelect';
 
@@ -50,8 +51,11 @@ export class RouteModalComponent implements OnInit, OnDestroy {
 
   getRouteStops(routeCode: any) {
     if (routeCode) {
+      this.isStopsRequestPending = true;
+      this.stops = [];
       this.apiService.get(`route-stops/${routeCode}`).subscribe((res: any) => {
         this.stops = res;
+        this.isStopsRequestPending = false;
       });
     }
   }
