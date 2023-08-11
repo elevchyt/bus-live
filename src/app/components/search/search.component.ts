@@ -14,9 +14,11 @@ export class SearchComponent implements OnInit {
   constructor(private http: HttpClient, private busService: BusService) {}
 
   onBusNameType(event: Event) {
+    // First, make sure that A, B, X (typed in English) are converted to their Greek equivalents (Α, Β & Χ) to compensate for potential user mistakes
+    const currText = this.busStopSearchField.nativeElement.value.replace('A', 'Α').replace('B', 'Β').replace('X', 'Χ');
+
     // Force uppercase when user is typing
-    this.busStopSearchField.nativeElement.value =
-      this.busStopSearchField.nativeElement.value.toUpperCase();
+    this.busStopSearchField.nativeElement.value = currText.toUpperCase();
   }
 
   onBusNameFocus() {

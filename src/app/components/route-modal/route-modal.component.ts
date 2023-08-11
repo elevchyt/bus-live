@@ -29,6 +29,7 @@ export class RouteModalComponent implements OnInit, OnDestroy {
 
   onRouteSelect(routeCode: string) {
     this.setModalOpen(false);
+    this.busService.updateSelectedBusLocation(routeCode);
   }
 
   ngOnInit() {}
