@@ -11,6 +11,9 @@
 npm-debug.log
 yarn-error.log
 
+# Environment (contains API keys!)
+/src/environment.ts
+
 # IDEs and editors
 .idea/
 .project
