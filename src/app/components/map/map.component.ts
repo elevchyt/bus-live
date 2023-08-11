@@ -1,6 +1,5 @@
 import { BusService } from './../../services/bus.service';
 import { Component, AfterViewInit, OnDestroy } from '@angular/core';
-import busStopsData from '../../../assets/bus-stops.json';
 import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AnimationUtils } from 'src/app/utils/animation-utils';
@@ -116,18 +115,19 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   addBusStopsMarkers() {
-    const busStopSvg =
-      '<svg width="8" height="8" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#A0A0A0" stroke="#64646499" stroke-width="2" style="opacity: 0.3" /></svg>';
-    const busStopIcon = new H.map.Icon(busStopSvg);
-    const busStops = busStopsData.busStops;
-    busStops.forEach((busStop) => {
-      const busStopMarker = new H.map.Marker(
-        { lat: busStop['latitude'], lng: busStop['longitude'] },
-        { icon: busStopIcon }
-      );
-      this.busStopsGroup.addObject(busStopMarker);
+    this.http.get(`http://localhost:${environment.apiPort}/bus-stops`).subscribe((res: any) => {
+      const busStopSvg =
+        '<svg width="8" height="8" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#A0A0A0" stroke="#64646499" stroke-width="2" style="opacity: 0.3" /></svg>';
+      const busStopIcon = new H.map.Icon(busStopSvg);
+      res.busStops.forEach((busStop: any) => {
+        const busStopMarker = new H.map.Marker(
+          { lat: busStop['latitude'], lng: busStop['longitude'] },
+          { icon: busStopIcon }
+        );
+        this.busStopsGroup.addObject(busStopMarker);
+      });
+      this.map.addObject(this.busStopsGroup);
     });
-    this.map.addObject(this.busStopsGroup);
   }
 
   clearBusMarkers() {
