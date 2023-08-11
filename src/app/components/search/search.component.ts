@@ -46,6 +46,8 @@ export class SearchComponent implements OnInit {
       this.apiService.get(`bus-routes/${searchText}`).subscribe((res) => {
         this.busService.openBusRoutesModal(res);
         this.busService.selectedBusName = searchText;
+      }, (err) => {
+        alert("This bus doesn't exist!")
       });
     }
   }

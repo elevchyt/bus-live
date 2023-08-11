@@ -56,6 +56,19 @@
       </button>
     </div>
 
+    <!-- Route Stops Data -->
+    <div
+      [class.hidden]="currentMode == 'routeSelect'"
+      class="w-full h-3/6 flex flex-col overflow-y-auto"
+    >
+      <div *ngFor="let stop of stops" class="py-1">
+        {{ stop.StopDescr }}
+        <span class="text-sm font-bold"
+          >{{ stop.ArrivalTime }}<span [class.hidden]="stop.ArrivalTime == '-'">'</span></span
+        >
+      </div>
+    </div>
+
     <!-- OK BUTTON -->
     <div class="w-full flex justify-center">
       <button
@@ -63,7 +76,7 @@
         class="w-10/12 h-12 my-2 px-2 rounded-lg bg-blue-400 overflow-hidden text-white shadow-xl active:bg-blue-500 hover:-translate-y-1 transition-all uppercase"
         (click)="setModalOpen(false)"
       >
-        OK
+        OK!
       </button>
     </div>
   </div>
