@@ -3,6 +3,7 @@ import { Component, AfterViewInit, OnDestroy } from '@angular/core';
 import busStopsData from '../../../assets/bus-stops.json';
 import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { AnimationUtils } from 'src/app/utils/animation-utils';
 
 declare var H: any;
 
@@ -25,7 +26,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   checkForBusLocationsInterval: ReturnType<typeof setInterval>;
 
-  constructor(private busService: BusService, private http: HttpClient) {
+  constructor(
+    private busService: BusService,
+    private http: HttpClient,
+    private animationUtils: AnimationUtils
+  ) {
     // Map API Auth
     this.platform = new H.service.Platform({
       apikey: 'LdxjfnzINnwrxVB-SH965nqjxy-SyJYbUyT8B_fwN8s',
@@ -186,10 +191,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     let validBusesIds: any[] = [];
     newLocations.forEach((fetchedBus: any) => {
       // Match the fetched buses to the existing buses, if one is not found that means that this fetched bus is NEW, so we need to add it
-      let currBusMarker; // validBusesIds are buses that exist, we later compare them to the existing array of buses to remove unused/finished buses
+      let currBusMarker: any; // validBusesIds are buses that exist, we later compare them to the existing array of buses to remove unused/finished buses
+      let fetchedCurrBus: any; // the marker with the most updated data for currBusMarker (aka the fetched bus that already exists but has updated data)
       for (let busMarker of this.busesGroup.getObjects()) {
         if (busMarker.getData().id == fetchedBus['VEH_NO']) {
           currBusMarker = busMarker;
+          fetchedCurrBus = fetchedBus;
           validBusesIds.push(busMarker.getData().id);
           break;
         }
@@ -202,7 +209,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       }
       // If fetched bus matches a bus on the map, we updated that marker's position to the fetched bus's position
       else {
-        console.log('Placeholder for bus location animation...');
+        this.animationUtils.ease(
+          currBusMarker.getGeometry(),
+          { lat: fetchedCurrBus['CS_LAT'], lng: fetchedCurrBus['CS_LNG'] },
+          60000,
+          function (coord) {
+            currBusMarker.setGeometry(coord);
+          }
+        );
       }
     });
 
