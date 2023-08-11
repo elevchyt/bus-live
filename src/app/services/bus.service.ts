@@ -5,19 +5,19 @@ import { Observable, Subject } from 'rxjs';
 export class BusService {
   selectedBusName: string = '-';
 
-  private updateSelectedBusLocationListeners = new Subject<any>();
+  private setSelectedBusLocationListeners = new Subject<any>();
   private openBusRoutesModalListeners = new Subject<any>();
 
-  updateSelectedBusLocationListen(): Observable<any> {
-    return this.updateSelectedBusLocationListeners.asObservable();
+  setSelectedBusLocationListen(): Observable<any> {
+    return this.setSelectedBusLocationListeners.asObservable();
   }
 
   openBusRoutesModalListen(): Observable<any> {
     return this.openBusRoutesModalListeners.asObservable();
   }
 
-  updateSelectedBusLocation(routeCode: string) {
-    this.updateSelectedBusLocationListeners.next(routeCode);
+  setSelectedBusLocation(routeCode: string) {
+    this.setSelectedBusLocationListeners.next(routeCode);
   }
 
   openBusRoutesModal(routes: object) {

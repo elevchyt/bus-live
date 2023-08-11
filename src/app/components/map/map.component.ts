@@ -2,6 +2,7 @@ import { BusService } from './../../services/bus.service';
 import { Component, AfterViewInit, OnDestroy } from '@angular/core';
 import busStopsData from '../../../assets/bus-stops.json';
 import { Subscription } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 declare var H: any;
 
@@ -22,18 +23,32 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   currentActiveRouteCode: string; // the route code of the currently selected bus that is being watched live by the user
 
-  constructor(private busService: BusService) {
+  constructor(private busService: BusService, private http: HttpClient) {
     // Map API Auth
     this.platform = new H.service.Platform({
       apikey: 'LdxjfnzINnwrxVB-SH965nqjxy-SyJYbUyT8B_fwN8s',
       useHTTPS: true,
     });
 
-    // Update selected bus location
+    // Set selected bus location
     const subscription: Subscription = this.busService
-      .updateSelectedBusLocationListen()
+      .setSelectedBusLocationListen()
       .subscribe((routeCode: string) => {
-        console.log(routeCode);
+        // Get bus location for the selected route
+        this.http
+          .get(`http://localhost:4300/bus-location/${routeCode}`)
+          .subscribe((res: any) => {
+            // If no bus location is found, inform the user that there is no active bus for this route at the moment
+            if (res.noActiveBusFound) {
+              alert('There are no active buses in this route!');
+            }
+            // If bus location is found, add buses markers & set view of map to the first bus found
+            else {
+              console.warn(res);
+              this.addBusMarkers(res);
+              this.setCenterToLocation(res[0]['CS_LAT'], res[0]['CS_LNG'], 16);
+            }
+          });
       });
     this.subscriptions.push(subscription);
   }
@@ -91,7 +106,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   addBusStopsMarkers() {
     const busStopSvg =
-      '<svg width="8" height="8" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#A0A0A099" stroke="#64646499" stroke-width="2" /></svg>';
+      '<svg width="8" height="8" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#A0A0A0" stroke="#64646499" stroke-width="2" style="opacity: 0.3" /></svg>';
     const busStopIcon = new H.map.Icon(busStopSvg);
     const busStops = busStopsData.busStops;
     busStops.forEach((busStop) => {
@@ -102,6 +117,33 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.busStopsGroup.addObject(busStopMarker);
     });
     this.map.addObject(this.busStopsGroup);
+  }
+
+  addBusMarkers(busLocations: any[]) {
+    // Clear previous markers first (if there are any...)
+    if (this.busesGroup.getObjects().length) {
+      this.busesGroup.removeAll();
+      this.map.removeObject(this.busesGroup);
+    }
+
+    const busSvg =
+      '<svg width="16" height="16" fill="none" style="overflow: visible;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
+      '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#6da0fd" stroke="#000000" style="opacity: 0.2;" stroke-width="24" />' +
+      '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#6da0fd" stroke="#ffffff" stroke-width="2" />' +
+      '<text x="-4" y="48" fill="white" stroke="black" class="font-sans" style="font-size: 2rem; font-weight: 800;text-shadow: 0 0px 18px rgba(0, 0, 0, 0.4);">' +
+      'BUS_NAME</text></svg>'.replace(
+        'BUS_NAME',
+        this.busService.selectedBusName
+      );
+    const busIcon = new H.map.DomIcon(busSvg);
+    busLocations.forEach((bus) => {
+      const busMarker = new H.map.DomMarker(
+        { lat: Number(bus['CS_LAT']), lng: Number(bus['CS_LNG']) },
+        { icon: busIcon }
+      );
+      this.busesGroup.addObject(busMarker);
+    });
+    this.map.addObject(this.busesGroup);
   }
 
   ngAfterViewInit(): void {
