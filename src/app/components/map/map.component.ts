@@ -12,7 +12,7 @@ declare var H: any;
   styleUrls: ['./map.component.scss'],
 })
 export class MapComponent implements AfterViewInit, OnDestroy {
-  subscriptions: Array<Subscription> = [];
+  subscriptions: Subscription[] = [];
   platform: any;
   map: any;
   ui: any;
@@ -23,7 +23,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   currentActiveRouteCode: string; // the route code of the currently selected bus that is being watched live by the user
 
-  checkForBusLocationsInterval: any;
+  checkForBusLocationsInterval: ReturnType<typeof setInterval>;
 
   constructor(private busService: BusService, private http: HttpClient) {
     // Map API Auth
