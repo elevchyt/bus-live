@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BusService } from 'src/app/services/bus.service';
+import { environment } from 'src/environment';
 
 @Component({
   selector: 'app-search',
@@ -35,7 +36,7 @@ export class SearchComponent implements OnInit {
 
     if (searchText) {
       this.http
-        .get(`http://localhost:4300/bus-routes/${searchText}`)
+        .get(`http://localhost:${environment.apiPort}/bus-routes/${searchText}`)
         .subscribe((res) => {
           this.busService.openBusRoutesModal(res);
           this.busService.selectedBusName = searchText;

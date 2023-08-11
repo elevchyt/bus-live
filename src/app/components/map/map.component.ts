@@ -4,6 +4,7 @@ import busStopsData from '../../../assets/bus-stops.json';
 import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AnimationUtils } from 'src/app/utils/animation-utils';
+import { environment } from 'src/environment';
 
 declare var H: any;
 
@@ -34,7 +35,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   ) {
     // Map API Auth
     this.platform = new H.service.Platform({
-      apikey: 'LdxjfnzINnwrxVB-SH965nqjxy-SyJYbUyT8B_fwN8s',
+      apikey: environment.apiKey,
       useHTTPS: true,
     });
 
@@ -44,7 +45,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       .subscribe((routeCode: string) => {
         // Get bus location for the selected route
         this.http
-          .get(`http://localhost:4300/bus-location/${routeCode}`)
+          .get(`http://localhost:${environment.apiPort}/bus-location/${routeCode}`)
           .subscribe((res: any) => {
             // If no bus location is found, inform the user that there is no active bus for this route at the moment
             if (res.noActiveBusFound) {
@@ -240,7 +241,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
       this.http
         .get(
-          `http://localhost:4300/bus-location/${this.busService.currentActiveRouteCode}`
+          `http://localhost:${environment.apiPort}/bus-location/${this.busService.currentActiveRouteCode}`
         )
         .subscribe((res: any) => {
           // If at some point we get a bad response, remove all markers & reset the bus service's data
