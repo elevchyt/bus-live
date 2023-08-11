@@ -183,8 +183,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   // Responsible for smoothly moving bus markers to their updated locations, removing junk markers and adding newly fetched ones
   updateBusMarkers(newLocations: any) {
-    console.log(newLocations);
-
     let validBusesIds: any[] = [];
     newLocations.forEach((fetchedBus: any) => {
       // Match the fetched buses to the existing buses, if one is not found that means that this fetched bus is NEW, so we need to add it
@@ -200,6 +198,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       // If fetched bus doesn't match a bus on the map, we create that bus
       if (!currBusMarker) {
         this.addSingleBusMarker(fetchedBus);
+        validBusesIds.push(fetchedBus['VEH_NO']); // add id to valid buses so that the marker doesn't get deleted immediately
       }
       // If fetched bus matches a bus on the map, we updated that marker's position to the fetched bus's position
       else {
@@ -208,10 +207,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     });
 
     // Finally, remove buses that are not inside validBuses
-    console.log(validBusesIds);
     this.busesGroup.getObjects().forEach((currBusMarker: any) => {
       if (!validBusesIds.includes(currBusMarker.getData().id)) {
-        console.log(`Vehicle with ID ${currBusMarker.getData().id} has been removed as it wasn't returned from OASA in the latest bus locations update!`);
+        console.log(
+          `Vehicle with ID ${
+            currBusMarker.getData().id
+          } has been removed as it wasn't returned from OASA in the latest bus locations update!`
+        );
         this.busesGroup.removeObject(currBusMarker);
       }
     });
