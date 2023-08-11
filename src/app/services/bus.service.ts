@@ -3,7 +3,8 @@ import { Observable, Subject } from 'rxjs';
 
 @Injectable()
 export class BusService {
-  selectedBusName: string = '-';
+  selectedBusName: string = '';
+  currentActiveRouteCode: string = '';
 
   private setSelectedBusLocationListeners = new Subject<any>();
   private openBusRoutesModalListeners = new Subject<any>();
