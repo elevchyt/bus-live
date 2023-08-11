@@ -25,6 +25,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   currentActiveRouteCode: string; // the route code of the currently selected bus that is being watched live by the user
 
   checkForBusLocationsInterval: ReturnType<typeof setInterval>;
+  userLocationUpdateInterval: ReturnType<typeof setInterval>;
 
   constructor(
     private busService: BusService,
@@ -276,10 +277,22 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.checkForBusLocationsInterval = setInterval(() => {
       this.checkForNewBusLocation();
     }, 6000);
+
+    // Update the user's location
+    this.userLocationUpdateInterval = setInterval(() => {
+      this.getUserLocation().then((position) => {
+        this.map.removeObject(this.personMarker);
+        this.addUserLocationMarker(
+          position.coords.latitude,
+          position.coords.longitude
+        );
+      });
+    }, 3000);
   }
 
   ngOnDestroy() {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     clearInterval(this.checkForBusLocationsInterval);
+    clearInterval(this.userLocationUpdateInterval);
   }
 }
