@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AnimationUtils } from 'src/app/utils/animation-utils';
 import { environment } from 'src/environment';
+import { ApiService } from 'src/app/services/api.service';
 
 declare var H: any;
 
@@ -30,11 +31,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   constructor(
     private busService: BusService,
     private http: HttpClient,
-    private animationUtils: AnimationUtils
+    private animationUtils: AnimationUtils,
+    private apiService: ApiService
   ) {
     // Map API Auth
     this.platform = new H.service.Platform({
-      apikey: environment.apiKey,
+      apikey: environment.hereApiKey,
       useHTTPS: true,
     });
 
@@ -43,20 +45,18 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       .setSelectedBusLocationListen()
       .subscribe((routeCode: string) => {
         // Get bus location for the selected route
-        this.http
-          .get(`http://localhost:${environment.apiPort}/bus-location/${routeCode}`)
-          .subscribe((res: any) => {
-            // If no bus location is found, inform the user that there is no active bus for this route at the moment
-            if (res.noActiveBusFound) {
-              alert('There are no active buses in this route!');
-            }
-            // If bus location is found, add buses markers & set view of map to the first bus found
-            else {
-              this.busService.currentActiveRouteCode = routeCode; // is used for polling if there is a bus in the route
-              this.addBusMarkers(res);
-              this.setCenterToLocation(res[0]['CS_LAT'], res[0]['CS_LNG'], 16);
-            }
-          });
+        this.apiService.get(`bus-location/${routeCode}`).subscribe((res: any) => {
+          // If no bus location is found, inform the user that there is no active bus for this route at the moment
+          if (res.noActiveBusFound) {
+            alert('There are no active buses in this route!');
+          }
+          // If bus location is found, add buses markers & set view of map to the first bus found
+          else {
+            this.busService.currentActiveRouteCode = routeCode; // is used for polling if there is a bus in the route
+            this.addBusMarkers(res);
+            this.setCenterToLocation(res[0]['CS_LAT'], res[0]['CS_LNG'], 16);
+          }
+        });
       });
     this.subscriptions.push(subscription);
   }
@@ -82,6 +82,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     let provider = this.map.getBaseLayer().getProvider();
     let style = new H.map.Style('/assets/map-theme-day.yaml');
     provider.setStyle(style);
+
+    // Set initial center to Athens, Greece
+    this.setCenterToLocation(37.9838, 23.7275, 16)
   }
 
   setCenterToLocation(lat: number, lng: number, zoomLevel: number) {
@@ -115,7 +118,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   addBusStopsMarkers() {
-    this.http.get(`http://localhost:${environment.apiPort}/bus-stops`).subscribe((res: any) => {
+    this.apiService.get(`bus-stops`).subscribe((res: any) => {
       const busStopSvg =
         '<svg width="8" height="8" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#A0A0A0" stroke="#64646499" stroke-width="2" style="opacity: 0.3" /></svg>';
       const busStopIcon = new H.map.Icon(busStopSvg);
@@ -239,10 +242,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     if (this.busService.currentActiveRouteCode) {
       console.warn('Updating bus markers...');
 
-      this.http
-        .get(
-          `http://localhost:${environment.apiPort}/bus-location/${this.busService.currentActiveRouteCode}`
-        )
+      this.apiService
+        .get(`bus-location/${this.busService.currentActiveRouteCode}`)
         .subscribe((res: any) => {
           // If at some point we get a bad response, remove all markers & reset the bus service's data
           if (res.noActiveBusFound) {
@@ -280,20 +281,19 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }, 6000);
 
     // Update the user's location
-    this.userLocationUpdateInterval = setInterval(() => {
-      this.getUserLocation().then((position) => {
-        this.map.removeObject(this.personMarker);
-        this.addUserLocationMarker(
-          position.coords.latitude,
-          position.coords.longitude
-        );
-      });
-    }, 3000);
+    // this.userLocationUpdateInterval = setInterval(() => {
+    //   this.getUserLocation().then((position) => {
+    //     this.map.removeObject(this.personMarker);
+    //     this.addUserLocationMarker(
+    //       position.coords.latitude,
+    //       position.coords.longitude
+    //     );
+    //   });
+    // }, 3000);
   }
 
   ngOnDestroy() {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     clearInterval(this.checkForBusLocationsInterval);
-    clearInterval(this.userLocationUpdateInterval);
   }
 }

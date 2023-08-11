@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -9,6 +9,7 @@ import { SearchComponent } from './components/search/search.component';
 import { RouteModalComponent } from './components/route-modal/route-modal.component';
 import { BusService } from './services/bus.service';
 import { AnimationUtils } from './utils/animation-utils';
+import { ApiService } from './services/api.service';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,7 @@ import { AnimationUtils } from './utils/animation-utils';
     RouteModalComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
-  providers: [BusService, AnimationUtils],
+  providers: [BusService, AnimationUtils, ApiService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
