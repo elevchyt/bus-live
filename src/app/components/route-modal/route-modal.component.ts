@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { BusService } from 'src/app/services/bus.service';
 
-type ModesType = 'routeSelect' | 'routeInfo';
+type ModesType = 'routeSelect' | 'routeInfo' | 'timesInfo';
 
 @Component({
   selector: 'app-route-modal',
@@ -14,11 +14,13 @@ type ModesType = 'routeSelect' | 'routeInfo';
 export class RouteModalComponent implements OnInit, OnDestroy {
   subscriptions: Array<Subscription> = [];
   isModalOpen: boolean = false;
+  isStopsRequestPending: boolean = false;
   routes: any[] = [];
   selectedRoute: any;
   stops: any[] = [];
-  isStopsRequestPending: boolean = false;
-
+  arrivalTimes: any[] = [];
+  returnTimes: any[] = [];
+  
   currentMode: ModesType = 'routeSelect';
 
   constructor(
@@ -42,7 +44,6 @@ export class RouteModalComponent implements OnInit, OnDestroy {
   }
 
   onRouteSelect(route: any) {
-    // this.setModalOpen(false);
     this.busService.setSelectedBusLocation(route.RouteCode);
     this.selectedRoute = route;
     this.currentMode = 'routeInfo';
@@ -58,6 +59,17 @@ export class RouteModalComponent implements OnInit, OnDestroy {
         this.isStopsRequestPending = false;
       });
     }
+  }
+
+  onTimesSelect() {
+    this.currentMode = 'timesInfo';
+    this.getLineTimes();
+  }
+
+  getLineTimes() {
+    this.apiService.get(`line-scheduled-times/${this.busService.selectedBusName}`).subscribe(res => {
+      console.log(res);
+    });
   }
 
   ngOnInit() {}

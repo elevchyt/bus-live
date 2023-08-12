@@ -11,7 +11,7 @@
 
   <!-- Modal Window -->
   <div
-    class="relative w-4/5 h-3/5 p-5 bg-slate-200 rounded-md shadow-lg select-none"
+    class="relative w-4/5 h-4/5 p-5 bg-slate-200 rounded-md shadow-lg select-none"
   >
     <!-- Modal Close Button -->
     <div
@@ -37,14 +37,14 @@
     </h1>
 
     <h3
-      [class.hidden]="currentMode == 'routeSelect'"
+      [class.hidden]="currentMode != 'routeInfo' && currentMode != 'timesInfo'"
       class="text-md text-center mb-6"
     >
       {{ selectedRoute?.RouteDescr }}
     </h3>
 
     <div
-      [class.hidden]="currentMode == 'routeInfo'"
+      [class.hidden]="currentMode != 'routeSelect'"
       class="h-3/4 flex justify-center flex-col overflow-y-auto"
     >
       <button
@@ -58,7 +58,7 @@
 
     <!-- Route Stops Data -->
     <div
-      [class.hidden]="currentMode == 'routeSelect'"
+      [class.hidden]="currentMode != 'routeInfo'"
       class="w-full h-3/6 flex flex-col overflow-y-auto"
     >
       <div *ngFor="let stop of stops" class="py-1">
@@ -69,16 +69,44 @@
         >
       </div>
 
+      <!-- Line Times Data -->
+      <div [class.hidden]="currentMode != 'timesInfo'">
+        <div id="arrival-times">
+          <h3>Arrival</h3>
+          <div>
+
+          </div>
+        </div>
+        <div id="return-times">
+          <h3>Return</h3>
+          <div>
+
+          </div>
+        </div>
+      </div>
+
       <!-- Loading Spinner -->
       <div [class.hidden]="!isStopsRequestPending">
         <app-loading-spinner></app-loading-spinner>
       </div>
     </div>
 
-    <!-- OK BUTTON -->
-    <div class="w-full flex justify-center">
+    <!-- Line Times Button -->
+    <div class="w-full mt-auto flex justify-center">
       <button
-        [class.hidden]="currentMode == 'routeSelect'"
+        [class.hidden]="currentMode != 'routeInfo'"
+        class="w-10/12 h-12 my-2 px-2 rounded-lg bg-blue-400 overflow-hidden text-white shadow-xl active:bg-blue-500 hover:-translate-y-1 transition-all uppercase"
+        (click)="onTimesSelect()"
+      >
+        ARRIVAL / RETURN
+      </button>
+    </div>
+    <!-- OK BUTTON -->
+    <div class="w-full mt-auto flex justify-center">
+      <button
+        [class.hidden]="
+          currentMode != 'routeInfo' && currentMode != 'timesInfo'
+        "
         class="w-10/12 h-12 my-2 px-2 rounded-lg bg-blue-400 overflow-hidden text-white shadow-xl active:bg-blue-500 hover:-translate-y-1 transition-all uppercase"
         (click)="setModalOpen(false)"
       >
