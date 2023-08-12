@@ -87,6 +87,7 @@
           <div *ngFor="let time of arrivalTimes" class="text-center">
             {{ time }}
           </div>
+          <div *ngIf="arrivalTimes.length == 0" class="text-center">-</div>
         </div>
       </div>
 
@@ -96,6 +97,7 @@
           <div *ngFor="let time of returnTimes" class="text-center">
             {{ time }}
           </div>
+          <div *ngIf="returnTimes.length == 0" class="text-center">-</div>
         </div>
       </div>
 
