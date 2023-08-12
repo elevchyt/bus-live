@@ -69,26 +69,51 @@
         >
       </div>
 
-      <!-- Line Times Data -->
-      <div [class.hidden]="currentMode != 'timesInfo'">
-        <div id="arrival-times">
-          <h3>Arrival</h3>
-          <div>
+      <!-- Loading Spinner -->
+      <div [class.hidden]="!isStopsRequestPending">
+        <app-loading-spinner></app-loading-spinner>
+      </div>
+    </div>
 
+    <!-- Line Times Data -->
+    <div
+      id="line-times-container"
+      [class.hidden]="currentMode != 'timesInfo'"
+      class="w-full h-3/6 flex"
+    >
+      <div class="w-1/2 flex flex-col">
+        <h3 class="text-center font-bold">Arrival</h3>
+        <div id="arrival-times" class="flex flex-col overflow-y-auto">
+          <div *ngFor="let time of arrivalTimes" class="text-center">
+            {{ time }}
           </div>
         </div>
-        <div id="return-times">
-          <h3>Return</h3>
-          <div>
+      </div>
 
+      <div class="w-1/2 flex flex-col">
+        <h3 class="text-center font-bold">Return</h3>
+        <div id="return-times" class="flex flex-col overflow-y-auto">
+          <div *ngFor="let time of returnTimes" class="text-center">
+            {{ time }}
           </div>
         </div>
       </div>
 
       <!-- Loading Spinner -->
-      <div [class.hidden]="!isStopsRequestPending">
+      <div [class.hidden]="!isScheduleRequestPending">
         <app-loading-spinner></app-loading-spinner>
       </div>
+    </div>
+
+    <!-- Line Times Back Button -->
+    <div class="w-full mt-auto flex justify-center">
+      <button
+        [class.hidden]="currentMode != 'timesInfo'"
+        class="w-10/12 h-12 my-2 px-2 rounded-lg bg-gray-400 overflow-hidden text-white shadow-xl active:bg-gray-500 hover:-translate-y-1 transition-all uppercase"
+        (click)="onTimesBackSelect()"
+      >
+        ← Back
+      </button>
     </div>
 
     <!-- Line Times Button -->
@@ -101,6 +126,7 @@
         ARRIVAL / RETURN
       </button>
     </div>
+
     <!-- OK BUTTON -->
     <div class="w-full mt-auto flex justify-center">
       <button

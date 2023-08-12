@@ -15,12 +15,13 @@ export class RouteModalComponent implements OnInit, OnDestroy {
   subscriptions: Array<Subscription> = [];
   isModalOpen: boolean = false;
   isStopsRequestPending: boolean = false;
+  isScheduleRequestPending: boolean = false;
   routes: any[] = [];
   selectedRoute: any;
   stops: any[] = [];
   arrivalTimes: any[] = [];
   returnTimes: any[] = [];
-  
+
   currentMode: ModesType = 'routeSelect';
 
   constructor(
@@ -67,9 +68,47 @@ export class RouteModalComponent implements OnInit, OnDestroy {
   }
 
   getLineTimes() {
-    this.apiService.get(`line-scheduled-times/${this.busService.selectedBusName}`).subscribe(res => {
-      console.log(res);
-    });
+    this.arrivalTimes = [];
+    this.returnTimes = [];
+    this.isScheduleRequestPending = true;
+    this.apiService
+      .get(`line-scheduled-times/${this.busService.selectedBusName}`)
+      .subscribe((res: any) => {
+        this.isScheduleRequestPending = false;
+
+        if (res.come?.length) {
+          res.come.forEach((timeData: any) => {
+            const parsedDate = new Date(timeData.sde_start2);
+            const formattedTime = parsedDate.toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
+            });
+
+            if (!this.returnTimes.includes(formattedTime)) {
+              this.returnTimes.push(formattedTime);
+            }
+          });
+        }
+
+        if (res.go?.length) {
+          res.go.forEach((timeData: any) => {
+            const parsedDate = new Date(timeData.sde_start1);
+            const formattedTime = parsedDate.toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false,
+            });
+            if (!this.arrivalTimes.includes(formattedTime)) {
+              this.arrivalTimes.push(formattedTime);
+            }
+          });
+        }
+      });
+  }
+
+  onTimesBackSelect() {
+    this.currentMode = 'routeInfo';
   }
 
   ngOnInit() {}
