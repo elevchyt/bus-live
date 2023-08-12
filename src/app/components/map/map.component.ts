@@ -148,7 +148,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       '<svg width="16" height="16" fill="none" style="overflow: visible;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
       '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#6da0fd" stroke="#000000" style="opacity: 0.15;" stroke-width="24" />' +
       '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#6da0fd" stroke="#ffffff" stroke-width="2" />' +
-      '<text x="-4" y="48" fill="#fae50f" stroke="black" class="font-sans" style="font-size: 2rem; font-weight: 800;text-shadow: 0 0px 18px rgba(0, 0, 0, 0.4);user-select: none;">' +
+      '<text x="-4" y="54" fill="#fae50f" stroke="black" class="font-sans" style="font-size: 2.4rem; font-weight: 800;text-shadow: 0 0px 18px rgba(0, 0, 0, 0.4);user-select: none;">' +
       'BUS_NAME</text></svg>'.replace(
         'BUS_NAME',
         this.busService.selectedBusName
@@ -173,7 +173,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       '<svg width="16" height="16" fill="none" style="overflow: visible;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
       '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#6da0fd" stroke="#000000" style="opacity: 0.15;" stroke-width="24" />' +
       '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#6da0fd" stroke="#ffffff" stroke-width="2" />' +
-      '<text x="-4" y="48" fill="#fae50f" stroke="black" class="font-sans" style="font-size: 2rem; font-weight: 800;text-shadow: 0 0px 18px rgba(0, 0, 0, 0.4);user-select: none;">' +
+      '<text x="-4" y="54" fill="#fae50f" stroke="black" class="font-sans" style="font-size: 2.4rem; font-weight: 800;text-shadow: 0 0px 18px rgba(0, 0, 0, 0.4);user-select: none;">' +
       'BUS_NAME</text></svg>'.replace(
         'BUS_NAME',
         this.busService.selectedBusName
