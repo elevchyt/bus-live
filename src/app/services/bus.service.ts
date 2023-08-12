@@ -5,6 +5,7 @@ import { Observable, Subject } from 'rxjs';
 export class BusService {
   selectedBusName: string = '';
   currentActiveRouteCode: string = '';
+  isBusRequestPending: boolean;
 
   private setSelectedBusLocationListeners = new Subject<any>();
   private openBusRoutesModalListeners = new Subject<any>();

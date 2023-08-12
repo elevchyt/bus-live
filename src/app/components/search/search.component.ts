@@ -43,11 +43,14 @@ export class SearchComponent implements OnInit {
     }
 
     if (searchText) {
+      this.busService.isBusRequestPending = true
       this.apiService.get(`bus-routes/${searchText}`).subscribe((res) => {
         this.busService.openBusRoutesModal(res);
         this.busService.selectedBusName = searchText;
+        this.busService.isBusRequestPending = false;
       }, (err) => {
-        alert("This bus doesn't exist!")
+        this.busService.isBusRequestPending = false;
+        alert("This bus doesn't exist!");
       });
     }
   }

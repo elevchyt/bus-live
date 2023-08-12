@@ -1,3 +1,6 @@
 <app-map></app-map>
 <app-search></app-search>
 <app-route-modal></app-route-modal>
+<app-loading-spinner-fullscreen
+  *ngIf="busService.isBusRequestPending"
+></app-loading-spinner-fullscreen>
