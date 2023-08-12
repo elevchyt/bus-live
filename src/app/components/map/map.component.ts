@@ -41,24 +41,34 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     });
 
     // Set selected bus location
-    const subscription: Subscription = this.busService
+    const busLocationSubscription: Subscription = this.busService
       .setSelectedBusLocationListen()
       .subscribe((routeCode: string) => {
         // Get bus location for the selected route
-        this.apiService.get(`bus-location/${routeCode}`).subscribe((res: any) => {
-          // If no bus location is found, inform the user that there is no active bus for this route at the moment
-          if (res.noActiveBusFound) {
-            // alert('There are no active buses in this route!');
-          }
-          // If bus location is found, add buses markers & set view of map to the first bus found
-          else {
-            this.busService.currentActiveRouteCode = routeCode; // is used for polling if there is a bus in the route
-            this.addBusMarkers(res);
-            this.setCenterToLocation(res[0]['CS_LAT'], res[0]['CS_LNG'], 16);
-          }
-        });
+        this.apiService
+          .get(`bus-location/${routeCode}`)
+          .subscribe((res: any) => {
+            // If no bus location is found, inform the user that there is no active bus for this route at the moment
+            if (res.noActiveBusFound) {
+              // alert('There are no active buses in this route!');
+            }
+            // If bus location is found, add buses markers & set view of map to the first bus found
+            else {
+              this.busService.currentActiveRouteCode = routeCode; // is used for polling if there is a bus in the route
+              this.addBusMarkers(res);
+              this.setCenterToLocation(res[0]['CS_LAT'], res[0]['CS_LNG'], 16);
+            }
+          });
       });
-    this.subscriptions.push(subscription);
+    this.subscriptions.push(busLocationSubscription);
+
+    // Set selected bus location
+    const busStopsSubscription: Subscription = this.busService
+      .setBusStopsListen()
+      .subscribe((busStops) => {
+        this.addBusStopsMarkers(busStops);
+      });
+    this.subscriptions.push(busStopsSubscription);
   }
 
   initMap(): void {
@@ -84,7 +94,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     provider.setStyle(style);
 
     // Set initial center to Athens, Greece
-    this.setCenterToLocation(37.9838, 23.7275, 16)
+    this.setCenterToLocation(37.9838, 23.7275, 16);
   }
 
   setCenterToLocation(lat: number, lng: number, zoomLevel: number) {
@@ -117,20 +127,21 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  addBusStopsMarkers() {
-    this.apiService.get(`bus-stops`).subscribe((res: any) => {
-      const busStopSvg =
-        '<svg width="8" height="8" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#A0A0A0" stroke="#64646499" stroke-width="2" style="opacity: 0.3" /></svg>';
-      const busStopIcon = new H.map.Icon(busStopSvg);
-      res.busStops.forEach((busStop: any) => {
-        const busStopMarker = new H.map.Marker(
-          { lat: busStop['latitude'], lng: busStop['longitude'] },
-          { icon: busStopIcon }
-        );
-        this.busStopsGroup.addObject(busStopMarker);
-      });
-      this.map.addObject(this.busStopsGroup);
+  addBusStopsMarkers(busStops: any[]) {
+    // Clear previous bus stops first (if there are any...)
+    this.clearStopsMarkers();
+
+    const busStopSvg =
+      '<svg width="12" height="12" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#fcfc03" stroke="#646464" stroke-width="4" /></svg>';
+    const busStopIcon = new H.map.Icon(busStopSvg);
+    busStops.forEach((busStop: any) => {
+      const busStopMarker = new H.map.Marker(
+        { lat: busStop['StopLat'], lng: busStop['StopLng'] },
+        { icon: busStopIcon }
+      );
+      this.busStopsGroup.addObject(busStopMarker);
     });
+    this.map.addObject(this.busStopsGroup);
   }
 
   clearBusMarkers() {
@@ -140,15 +151,22 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  clearStopsMarkers() {
+    if (this.busStopsGroup.getObjects().length) {
+      this.busStopsGroup.removeAll();
+      this.map.removeObject(this.busStopsGroup);
+    }
+  }
+
   addBusMarkers(busLocations: any[]) {
-    // Clear previous markers first (if there are any...)
+    // Clear previous bus markers first (if there are any...)
     this.clearBusMarkers();
 
     const busSvg =
       '<svg width="16" height="16" fill="none" style="overflow: visible;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
       '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#6da0fd" stroke="#000000" style="opacity: 0.15;" stroke-width="24" />' +
       '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#6da0fd" stroke="#ffffff" stroke-width="2" />' +
-      '<text x="-4" y="54" fill="#fae50f" stroke="black" class="font-sans" style="font-size: 2.4rem; font-weight: 800;text-shadow: 0 0px 18px rgba(0, 0, 0, 0.4);user-select: none;">' +
+      '<text x="-8" y="62" fill="#fcfc03" stroke="black" class="font-sans" style="font-size: 3rem; font-weight: 800;text-shadow: 0 0px 18px rgba(0, 0, 0, 0.4);user-select: none;">' +
       'BUS_NAME</text></svg>'.replace(
         'BUS_NAME',
         this.busService.selectedBusName
@@ -173,7 +191,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       '<svg width="16" height="16" fill="none" style="overflow: visible;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
       '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#6da0fd" stroke="#000000" style="opacity: 0.15;" stroke-width="24" />' +
       '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#6da0fd" stroke="#ffffff" stroke-width="2" />' +
-      '<text x="-4" y="54" fill="#fae50f" stroke="black" class="font-sans" style="font-size: 2.4rem; font-weight: 800;text-shadow: 0 0px 18px rgba(0, 0, 0, 0.4);user-select: none;">' +
+      '<text x="-8" y="62" fill="#fcfc03" stroke="black" class="font-sans" style="font-size: 3rem; font-weight: 800;text-shadow: 0 0px 18px rgba(0, 0, 0, 0.4);user-select: none;">' +
       'BUS_NAME</text></svg>'.replace(
         'BUS_NAME',
         this.busService.selectedBusName
@@ -262,7 +280,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.initMap();
-    this.addBusStopsMarkers();
     this.getUserLocation().then((position) => {
       this.setCenterToLocation(
         position.coords.latitude,

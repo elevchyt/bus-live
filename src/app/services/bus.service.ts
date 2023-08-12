@@ -8,10 +8,15 @@ export class BusService {
   isBusRequestPending: boolean;
 
   private setSelectedBusLocationListeners = new Subject<any>();
+  private setBusStopsListeners = new Subject<any>();
   private openBusRoutesModalListeners = new Subject<any>();
 
   setSelectedBusLocationListen(): Observable<any> {
     return this.setSelectedBusLocationListeners.asObservable();
+  }
+
+  setBusStopsListen(): Observable<any> {
+    return this.setBusStopsListeners.asObservable();
   }
 
   openBusRoutesModalListen(): Observable<any> {
@@ -20,6 +25,10 @@ export class BusService {
 
   setSelectedBusLocation(routeCode: string) {
     this.setSelectedBusLocationListeners.next(routeCode);
+  }
+
+  setBusStops(busStops: any[]) {
+    this.setBusStopsListeners.next(busStops);
   }
 
   openBusRoutesModal(routes: object) {

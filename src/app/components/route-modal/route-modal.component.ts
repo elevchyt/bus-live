@@ -58,6 +58,7 @@ export class RouteModalComponent implements OnInit, OnDestroy {
       this.apiService.get(`route-stops/${routeCode}`).subscribe((res: any) => {
         this.stops = res;
         this.isStopsRequestPending = false;
+        this.busService.setBusStops(this.stops);
       });
     }
   }
