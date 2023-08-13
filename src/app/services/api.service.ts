@@ -10,9 +10,9 @@ export class ApiService {
 
   constructor(private http: HttpClient) {
     if (window.location.host == 'localhost:4200') {
-      this.baseUrl = environment.apiBaseUrl;
+      this.baseUrl = environment.devApiBaseUrl;
     } else {
-      this.baseUrl = environment.apiBaseUrl;
+      this.baseUrl = environment.devApiBaseUrl;
     }
   }
 

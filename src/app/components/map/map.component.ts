@@ -1,5 +1,5 @@
 import { BusService } from './../../services/bus.service';
-import { Component, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AnimationUtils } from 'src/app/utils/animation-utils';
@@ -14,10 +14,15 @@ declare var H: any;
   styleUrls: ['./map.component.scss'],
 })
 export class MapComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('stopInfoPanel')
+  stopInfoPanel: ElementRef<HTMLElement>;
+  
   subscriptions: Subscription[] = [];
   platform: any;
   map: any;
   ui: any;
+  selectedStopData: object;
+  isStopSelected: boolean;
 
   busStopsGroup = new H.map.Group();
   busesGroup = new H.map.Group();
@@ -140,17 +145,20 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         { icon: busStopIcon }
       );
 
-      // Add hover 
-      busStopMarker.addEventListener('tap', (marker: any) => {
-        console.log({
-          stopCode: busStop['StopCode'],
-          stopDescr: busStop['StopDescr'],
-          stopDescrEng: busStop['StopDescrEng'],
-          stopLat: busStop['StopLat'],
-          stopLng: busStop['StopLng'],
-        });
+      // Tap behaviour for showing bus times on tapping a bus stop
+      busStopMarker.addEventListener('tap', () => {
+        this.apiService
+          .get(`stop-times-info/${busStop['StopCode']}`)
+          .subscribe((stopTimesRes: any) => {
+            this.isStopSelected = true;
+            this.selectedStopData = {
+              stopName: busStop['StopDescr'],
+              stopNameEng: busStop['StopDescrEng'],
+              stopTimes: stopTimesRes
+            };
+            console.log(this.selectedStopData);
+          });
       });
-      
       this.busStopsGroup.addObject(busStopMarker);
     });
     this.map.addObject(this.busStopsGroup);
