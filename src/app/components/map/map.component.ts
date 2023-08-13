@@ -1,5 +1,11 @@
 import { BusService } from './../../services/bus.service';
-import { Component, AfterViewInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  AfterViewInit,
+  OnDestroy,
+  ElementRef,
+  ViewChild,
+} from '@angular/core';
 import { Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AnimationUtils } from 'src/app/utils/animation-utils';
@@ -16,12 +22,12 @@ declare var H: any;
 export class MapComponent implements AfterViewInit, OnDestroy {
   @ViewChild('stopInfoPanel')
   stopInfoPanel: ElementRef<HTMLElement>;
-  
+
   subscriptions: Subscription[] = [];
   platform: any;
   map: any;
   ui: any;
-  selectedStopData: object;
+  selectedStopData: any;
   isStopSelected: boolean;
 
   busStopsGroup = new H.map.Group();
@@ -154,9 +160,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
             this.selectedStopData = {
               stopName: busStop['StopDescr'],
               stopNameEng: busStop['StopDescrEng'],
-              stopTimes: stopTimesRes
+              stopTimes: stopTimesRes,
             };
-            console.log(this.selectedStopData);
           });
       });
       this.busStopsGroup.addObject(busStopMarker);
@@ -297,6 +302,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           }
         });
     }
+  }
+
+  closeStopInfoModal() {
+    this.isStopSelected = false;
   }
 
   ngAfterViewInit(): void {
