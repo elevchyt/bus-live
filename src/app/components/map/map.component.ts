@@ -35,9 +35,9 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   personMarker: any;
 
   currentActiveRouteCode: string; // the route code of the currently selected bus that is being watched live by the user
+  userPositionWatchId: any;
 
   checkForBusLocationsInterval: ReturnType<typeof setInterval>;
-  userLocationUpdateInterval: ReturnType<typeof setInterval>;
 
   constructor(
     private busService: BusService,
@@ -127,18 +127,24 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.map.addObject(this.personMarker);
 
     // Update the user's location (polling)
-    this.getUserLocation().then((position) => {
-      this.userLocationUpdateInterval = setInterval(() => {
+    this.userPositionWatchId = navigator.geolocation.watchPosition(
+      (posData: GeolocationPosition) => {
         this.animationUtils.ease(
           this.personMarker.getGeometry(),
-          { lat: position.coords.latitude, lng: position.coords.longitude },
-          3000,
+          { lat: posData.coords.latitude, lng: posData.coords.longitude },
+          200,
           (coord) => {
             this.personMarker.setGeometry(coord);
           }
         );
-      }, 3000);
-    });
+      },
+      () => {},
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
+      }
+    );
   }
 
   getUserLocation(): Promise<GeolocationPosition> {
@@ -275,11 +281,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       }
       // If fetched bus matches a bus on the map, we updated that marker's position to the fetched bus's position
       else {
-        // console.log(String(fetchedCurrBus['CS_LAT']) + ' - ' + String(fetchedCurrBus['CS_LNG']));
         this.animationUtils.ease(
           currBusMarker.getGeometry(),
           { lat: fetchedCurrBus['CS_LAT'], lng: fetchedCurrBus['CS_LNG'] },
-          6000,
+          3000,
           (coord) => {
             currBusMarker.setGeometry(coord);
           }
@@ -343,12 +348,12 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     // Update the buses' location if there is a bus that the user is currently watching
     this.checkForBusLocationsInterval = setInterval(() => {
       this.checkForNewBusLocation();
-    }, 6000);
+    }, 3000);
   }
 
   ngOnDestroy() {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     clearInterval(this.checkForBusLocationsInterval);
-    clearInterval(this.userLocationUpdateInterval);
+    navigator.geolocation.clearWatch(this.userPositionWatchId);
   }
 }
