@@ -125,6 +125,20 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       { icon: personIcon }
     );
     this.map.addObject(this.personMarker);
+
+    // Update the user's location (polling)
+    this.getUserLocation().then((position) => {
+      this.userLocationUpdateInterval = setInterval(() => {
+        this.animationUtils.ease(
+          this.personMarker.getGeometry(),
+          { lat: position.coords.latitude, lng: position.coords.longitude },
+          3000,
+          (coord) => {
+            this.personMarker.setGeometry(coord);
+          }
+        );
+      }, 3000);
+    });
   }
 
   getUserLocation(): Promise<GeolocationPosition> {
@@ -265,8 +279,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
         this.animationUtils.ease(
           currBusMarker.getGeometry(),
           { lat: fetchedCurrBus['CS_LAT'], lng: fetchedCurrBus['CS_LNG'] },
-          60000,
-          function (coord) {
+          6000,
+          (coord) => {
             currBusMarker.setGeometry(coord);
           }
         );
@@ -330,21 +344,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.checkForBusLocationsInterval = setInterval(() => {
       this.checkForNewBusLocation();
     }, 6000);
-
-    // Update the user's location
-    // this.userLocationUpdateInterval = setInterval(() => {
-    //   this.getUserLocation().then((position) => {
-    //     this.map.removeObject(this.personMarker);
-    //     this.addUserLocationMarker(
-    //       position.coords.latitude,
-    //       position.coords.longitude
-    //     );
-    //   });
-    // }, 3000);
   }
 
   ngOnDestroy() {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
     clearInterval(this.checkForBusLocationsInterval);
+    clearInterval(this.userLocationUpdateInterval);
   }
 }
