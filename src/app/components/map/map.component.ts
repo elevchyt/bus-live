@@ -31,7 +31,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   busStopsGroup = new H.map.Group();
   busesGroup = new H.map.Group();
-  personMarker: any;
+  userMarker: any;
 
   currentActiveRouteCode: string; // the route code of the currently selected bus that is being watched live by the user
   userPositionWatchId: any;
@@ -108,8 +108,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   setCenterLocationToUserMarker() {
     this.map.setCenter({
-      lat: this.personMarker.getGeometry().lat,
-      lng: this.personMarker.getGeometry().lng,
+      lat: this.userMarker.getGeometry().lat,
+      lng: this.userMarker.getGeometry().lng,
     });
   }
 
@@ -125,21 +125,21 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#f68221" stroke="#ffffff" stroke-width="2" /></svg>';
 
     const personIcon = new H.map.DomIcon(personSvg);
-    this.personMarker = new H.map.DomMarker(
+    this.userMarker = new H.map.DomMarker(
       { lat: lat, lng: lng },
       { icon: personIcon }
     );
-    this.map.addObject(this.personMarker);
+    this.map.addObject(this.userMarker);
 
     // Update the user's location (polling)
     this.userPositionWatchId = navigator.geolocation.watchPosition(
       (posData: GeolocationPosition) => {
         this.animationUtils.ease(
-          this.personMarker.getGeometry(),
+          this.userMarker.getGeometry(),
           { lat: posData.coords.latitude, lng: posData.coords.longitude },
           200,
           (coord) => {
-            this.personMarker.setGeometry(coord);
+            this.userMarker.setGeometry(coord);
           }
         );
       },
