@@ -12,6 +12,7 @@ import { LoadingSpinnerFullscreenComponent } from './components/loading-spinner-
 import { BusService } from './services/bus.service';
 import { AnimationUtils } from './utils/animation-utils';
 import { ApiService } from './services/api.service';
+import { TimeUtils } from './utils/time-utils';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,7 @@ import { ApiService } from './services/api.service';
     LoadingSpinnerFullscreenComponent
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
-  providers: [BusService, AnimationUtils, ApiService],
+  providers: [BusService, AnimationUtils, TimeUtils, ApiService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

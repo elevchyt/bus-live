@@ -1,10 +1,14 @@
-import { HttpClient } from '@angular/common/http';
+import { TimeUtils } from './../../utils/time-utils';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { BusService } from 'src/app/services/bus.service';
 
 type ModesType = 'routeSelect' | 'routeInfo' | 'timesInfo';
+export type TimesType = {
+  time: string;
+  isNext: boolean;
+};
 
 @Component({
   selector: 'app-route-modal',
@@ -19,15 +23,15 @@ export class RouteModalComponent implements OnInit, OnDestroy {
   routes: any[] = [];
   selectedRoute: any;
   stops: any[] = [];
-  arrivalTimes: any[] = [];
-  returnTimes: any[] = [];
+  arrivalTimes: TimesType[] = [];
+  returnTimes: TimesType[] = [];
 
   currentMode: ModesType = 'routeSelect';
 
   constructor(
     public busService: BusService,
-    private http: HttpClient,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private timeUtils: TimeUtils
   ) {
     // Open modal with fetched routes
     const subscription: Subscription = this.busService
@@ -77,6 +81,9 @@ export class RouteModalComponent implements OnInit, OnDestroy {
       .subscribe((res: any) => {
         this.isScheduleRequestPending = false;
 
+        const currentTime = new Date();
+        const currentTimestamp = currentTime.getTime();
+
         if (res.come?.length) {
           res.come.forEach((timeData: any) => {
             const parsedDate = new Date(timeData.sde_start2);
@@ -86,8 +93,11 @@ export class RouteModalComponent implements OnInit, OnDestroy {
               hour12: false,
             });
 
-            if (!this.returnTimes.includes(formattedTime)) {
-              this.returnTimes.push(formattedTime);
+            const alreadyContainsTime = this.returnTimes.some(
+              (obj) => obj.time === formattedTime
+            );
+            if (!alreadyContainsTime) {
+              this.returnTimes.push({ time: formattedTime, isNext: false });
             }
           });
         }
@@ -100,11 +110,44 @@ export class RouteModalComponent implements OnInit, OnDestroy {
               minute: '2-digit',
               hour12: false,
             });
-            if (!this.arrivalTimes.includes(formattedTime)) {
-              this.arrivalTimes.push(formattedTime);
+
+            const alreadyContainsTime = this.returnTimes.some(
+              (obj) => obj.time === formattedTime
+            );
+            if (!alreadyContainsTime) {
+              this.arrivalTimes.push({ time: formattedTime, isNext: false });
             }
           });
         }
+
+        // Find closest the arrival & return times that are closest to the current time and set their isNext to true
+        const closestReturnTime = this.timeUtils.findClosestFutureTime(
+          this.returnTimes
+        );
+        const closestArrivalTime = this.timeUtils.findClosestFutureTime(
+          this.arrivalTimes
+        );
+
+        for (let timeData of this.arrivalTimes) {
+          if (timeData.time == closestArrivalTime) {
+            timeData.isNext = true;
+          }
+        }
+        for (let timeData of this.returnTimes) {
+          if (timeData.time == closestReturnTime) {
+            timeData.isNext = true;
+          }
+        }
+
+        // Scroll each column to the time that has isNext
+        setTimeout(() => {
+          document
+            .getElementsByClassName('closest-return-time')[0]
+            ?.scrollIntoView({ behavior: 'instant' });
+          document
+            .getElementsByClassName('closest-arrival-time')[0]
+            ?.scrollIntoView({ behavior: 'instant' });
+        }, 100);
       });
   }
 

@@ -84,8 +84,12 @@
       <div class="w-1/2 flex flex-col">
         <h3 class="text-center font-bold">Arrival</h3>
         <div id="arrival-times" class="flex flex-col overflow-y-auto">
-          <div *ngFor="let time of arrivalTimes" class="text-center">
-            {{ time }}
+          <div
+            *ngFor="let timeData of arrivalTimes"
+            class="text-center"
+            [class.closest-arrival-time]="timeData.isNext"
+          >
+            {{ timeData.time }}
           </div>
           <div *ngIf="arrivalTimes.length == 0" class="text-center">-</div>
         </div>
@@ -94,8 +98,12 @@
       <div class="w-1/2 flex flex-col">
         <h3 class="text-center font-bold">Return</h3>
         <div id="return-times" class="flex flex-col overflow-y-auto">
-          <div *ngFor="let time of returnTimes" class="text-center">
-            {{ time }}
+          <div
+            *ngFor="let timeData of returnTimes"
+            class="text-center"
+            [class.closest-return-time]="timeData.isNext"
+          >
+            {{ timeData.time }}
           </div>
           <div *ngIf="returnTimes.length == 0" class="text-center">-</div>
         </div>

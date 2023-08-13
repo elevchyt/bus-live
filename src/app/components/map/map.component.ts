@@ -7,7 +7,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
 import { AnimationUtils } from 'src/app/utils/animation-utils';
 import { environment } from 'src/environment';
 import { ApiService } from 'src/app/services/api.service';
@@ -41,7 +40,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     private busService: BusService,
-    private http: HttpClient,
     private animationUtils: AnimationUtils,
     private apiService: ApiService
   ) {

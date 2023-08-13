@@ -1,3 +1,9 @@
 .hidden {
-    display: none!important;
+  display: none !important;
+}
+
+.closest-arrival-time,
+.closest-return-time {
+  font-weight: bold;
+  font-size: 1.4rem;
 }
