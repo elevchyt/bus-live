@@ -106,6 +106,13 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.setCenterToLocation(37.9838, 23.7275, 16);
   }
 
+  setCenterLocationToUserMarker() {
+    this.map.setCenter({
+      lat: this.personMarker.getGeometry().lat,
+      lng: this.personMarker.getGeometry().lng,
+    });
+  }
+
   setCenterToLocation(lat: number, lng: number, zoomLevel: number) {
     this.map.setCenter({ lat, lng });
     this.map.setZoom(zoomLevel, false);

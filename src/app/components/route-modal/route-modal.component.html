@@ -62,7 +62,11 @@
       class="w-full h-3/6 flex flex-col overflow-y-auto"
       id="route-stops-container"
     >
-      <div *ngFor="let stop of stops" class="py-1" [class.next-stop-info]="stop.isNextStop">
+      <div
+        *ngFor="let stop of stops"
+        class="py-1"
+        [class.next-stop-info]="stop.isNextStop"
+      >
         {{ stop.StopDescr }}
         <span class="text-sm font-bold"
           >{{ stop.ArrivalTime
