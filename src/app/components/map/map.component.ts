@@ -143,7 +143,11 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     this.clearStopsMarkers();
 
     const busStopSvg =
-      '<svg width="12" height="12" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#fcfc03" stroke="#646464" stroke-width="4" /></svg>';
+      '<svg width="16" height="16" fill="none" style="overflow: visible;" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' +
+      '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#fcfc03" stroke="#646464" style="opacity: 0;" stroke-width="34" />' +
+      '<path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#fcfc03" stroke="#646464" stroke-width="2" />' +
+      '<text x="-8" y="62" fill="#fcfc03" class="font-sans" style="font-size: 3rem; font-weight: 800;text-shadow: 0 0px 18px rgba(0, 0, 0, 0.4);filter: drop-shadow(2px 4px 6px black);user-select: none;"></svg>';
+
     const busStopIcon = new H.map.DomIcon(busStopSvg);
     busStops.forEach((busStop: any) => {
       const busStopMarker = new H.map.DomMarker(
