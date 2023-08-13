@@ -133,12 +133,24 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     const busStopSvg =
       '<svg width="12" height="12" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Z" fill="#fcfc03" stroke="#646464" stroke-width="4" /></svg>';
-    const busStopIcon = new H.map.Icon(busStopSvg);
+    const busStopIcon = new H.map.DomIcon(busStopSvg);
     busStops.forEach((busStop: any) => {
-      const busStopMarker = new H.map.Marker(
+      const busStopMarker = new H.map.DomMarker(
         { lat: busStop['StopLat'], lng: busStop['StopLng'] },
         { icon: busStopIcon }
       );
+
+      // Add hover 
+      busStopMarker.addEventListener('tap', (marker: any) => {
+        console.log({
+          stopCode: busStop['StopCode'],
+          stopDescr: busStop['StopDescr'],
+          stopDescrEng: busStop['StopDescrEng'],
+          stopLat: busStop['StopLat'],
+          stopLng: busStop['StopLng'],
+        });
+      });
+      
       this.busStopsGroup.addObject(busStopMarker);
     });
     this.map.addObject(this.busStopsGroup);
