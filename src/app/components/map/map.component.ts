@@ -305,8 +305,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   checkForNewBusLocation() {
     if (this.busService.currentActiveRouteCode) {
-      console.warn('Updating bus markers...');
-
       this.apiService
         .get(`bus-location/${this.busService.currentActiveRouteCode}`)
         .subscribe((res: any) => {
@@ -318,7 +316,6 @@ export class MapComponent implements AfterViewInit, OnDestroy {
           }
           // If bus location is found, update the bus markers
           else {
-            // this.addBusMarkers(res);
             this.updateBusMarkers(res);
           }
         });

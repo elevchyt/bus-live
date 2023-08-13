@@ -60,8 +60,28 @@ export class RouteModalComponent implements OnInit, OnDestroy {
       this.isStopsRequestPending = true;
       this.stops = [];
       this.apiService.get(`route-stops/${routeCode}`).subscribe((res: any) => {
-        this.stops = res;
         this.isStopsRequestPending = false;
+        this.stops = res;
+
+        // Get the next stop of this route & scroll its element into view
+        if (this.stops.length) {
+          const nextStopIndex = this.stops.findIndex(
+            (stop) => stop.ArrivalTime != '-'
+          );
+          if (nextStopIndex != -1) {
+            this.stops[nextStopIndex]['isNextStop'] = true;
+
+            setTimeout(() => {
+              document
+                .getElementsByClassName('next-stop-info')[0]
+                ?.scrollIntoView({
+                  behavior: 'instant',
+                  block: 'center',
+                  inline: 'center',
+                });
+            }, 100);
+          }
+        }
         this.busService.setBusStops(this.stops);
       });
     }
@@ -143,10 +163,18 @@ export class RouteModalComponent implements OnInit, OnDestroy {
         setTimeout(() => {
           document
             .getElementsByClassName('closest-return-time')[0]
-            ?.scrollIntoView({ behavior: 'instant' });
+            ?.scrollIntoView({
+              behavior: 'instant',
+              block: 'center',
+              inline: 'center',
+            });
           document
             .getElementsByClassName('closest-arrival-time')[0]
-            ?.scrollIntoView({ behavior: 'instant' });
+            ?.scrollIntoView({
+              behavior: 'instant',
+              block: 'center',
+              inline: 'center',
+            });
         }, 100);
       });
   }
