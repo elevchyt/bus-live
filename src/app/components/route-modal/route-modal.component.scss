@@ -7,3 +7,19 @@
   font-weight: bold;
   font-size: 1.4rem;
 }
+
+// Custom scrollbar
+#route-stops-container::-webkit-scrollbar-track {
+  background-color: transparent;
+  border-radius: 10px;
+}
+
+#route-stops-container::-webkit-scrollbar-thumb {
+  background-color: #b8b8b8;
+  border-radius: 10px;
+}
+
+#route-stops-container::-webkit-scrollbar {
+  width: 4px;
+  border-radius: 10px;
+}
